@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .
+    container_name: workshop-registration
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-sportmed1405}
+      SECRET_KEY: ${SECRET_KEY:-change-this-secret}
+      DB_PATH: /app/data/registrations.db
+      UPLOAD_FOLDER: /app/data/uploads
+    volumes:
+      # Persist SQLite DB and uploaded CVs on the host
+      - ./data:/app/data
+      # Optional: drop workshop posters here (e.g. systematic-review.jpg)
+      - ./static/posters:/app/static/posters
+    restart: unless-stopped

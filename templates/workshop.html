@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ w.title }} | مرکز تحقیقات پزشکی ورزشی</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- هدر کارگاه -->
+  <header class="hero ws-hero">
+    <div class="hero-inner">
+      <div class="logo-badge">
+        <span class="logo-ring">🏃</span>
+        <span>{{ w.subtitle }}</span>
+      </div>
+      <h1>{{ w.title }}</h1>
+      <p>{{ w.level }}</p>
+      <p class="ws-desc">{{ w.description }}</p>
+      <div class="ws-meta-chips">
+        {% if w.open %}
+        <span class="chip chip-green">✓ ثبت‌نام باز</span>
+        {% else %}
+        <span class="chip chip-gray">به‌زودی</span>
+        {% endif %}
+        <span class="chip">⏳ مهلت ثبت‌نام: {{ w.deadline }}</span>
+        <span class="chip">✉️ {{ w.contact }}</span>
+      </div>
+      <a class="back-home" href="{{ url_for('index') }}">→ بازگشت به فهرست کارگاه‌ها</a>
+    </div>
+    <svg class="wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,50 C240,95 480,0 720,35 C960,70 1200,20 1440,55 L1440,90 L0,90 Z" fill="#f4f5fb"/>
+    </svg>
+  </header>
+
+  <main class="container">
+    <div class="ws-layout">
+
+      <!-- ستون جزئیات -->
+      <section class="ws-panel">
+        {% if w.poster %}
+        <div class="ws-poster">
+          <img src="{{ url_for('static', filename='posters/' ~ w.poster) }}" alt="پوستر {{ w.title }}"
+               onerror="this.closest('.ws-poster').classList.add('no-img')">
+          <div class="ws-poster-fb"><span class="fb-icon">🎓</span><span>{{ w.title }}</span></div>
+        </div>
+        {% endif %}
+
+        <div class="ws-panel-body">
+          {% if w.highlight %}
+          <div class="highlight-box">
+            <div class="highlight-head">✨ فراتر از یک کارگاه؛ یک مقاله‌ی واقعی</div>
+            <p>{{ w.highlight }}</p>
+          </div>
+          {% endif %}
+
+          {% if w.topics %}
+          <h2 class="ws-section-title">سرفصل‌های دوره</h2>
+          <ul class="topic-list">
+            {% for t in w.topics %}<li>{{ t }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+
+          <h2 class="ws-section-title">مشخصات دوره</h2>
+          <div class="spec-table">
+            <div class="spec-row"><span>عنوان دوره</span><b>{{ w.title }}</b></div>
+            <div class="spec-row"><span>برگزارکننده</span><b>{{ w.subtitle }}</b></div>
+            <div class="spec-row"><span>سطح و محتوا</span><b>{{ w.level }}</b></div>
+            <div class="spec-row"><span>مهلت ثبت‌نام</span><b>{{ w.deadline }}</b></div>
+            <div class="spec-row"><span>ایمیل ارتباطی</span><b dir="ltr">{{ w.contact }}</b></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ستون فرم ثبت‌نام -->
+      <section class="ws-panel">
+        <div class="ws-panel-body">
+          {% if w.open %}
+          <h2 class="ws-section-title form-title">فرم ثبت‌نام</h2>
+          <p class="form-hint">اطلاعات زیر را پر کنید — ثبت‌نام کمتر از یک دقیقه طول می‌کشد.</p>
+
+          <form id="regForm" data-workshop="{{ w.id }}" enctype="multipart/form-data" novalidate>
+            <label>نام و نام خانوادگی <span class="req">*</span>
+              <input type="text" name="full_name" placeholder="مثلاً: زهرا محمدی">
+              <small class="err" data-err="full_name"></small>
+            </label>
+
+            <label>شماره دانشجویی <span class="req">*</span>
+              <input type="text" name="student_id" placeholder="فقط رقم، مثلاً 4011234567" inputmode="numeric">
+              <small class="err" data-err="student_id"></small>
+            </label>
+
+            <label>شماره موبایل <span class="req">*</span>
+              <input type="tel" name="mobile" placeholder="09xxxxxxxxx" dir="ltr" inputmode="tel">
+              <small class="err" data-err="mobile"></small>
+            </label>
+
+            <label>ایمیل <span class="req">*</span>
+              <input type="email" name="email" placeholder="name@example.com" dir="ltr">
+              <small class="err" data-err="email"></small>
+            </label>
+
+            <label>مقطع تحصیلی <span class="req">*</span>
+              <select name="degree">
+                <option value="">انتخاب کنید…</option>
+                {% for d in degrees %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+              </select>
+              <small class="err" data-err="degree"></small>
+            </label>
+
+            <label>رشته تحصیلی <span class="req">*</span>
+              <input type="text" name="major" placeholder="مثلاً: فیزیوتراپی، علوم تغذیه، پزشکی…">
+              <small class="err" data-err="major"></small>
+            </label>
+
+            <label>ترم تحصیلی <span class="req">*</span>
+              <select name="term">
+                <option value="">انتخاب کنید…</option>
+                {% for t in terms %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+              </select>
+              <small class="err" data-err="term"></small>
+            </label>
+
+            <label>حوزه علاقه‌مندی <span class="req">*</span>
+              <input type="text" name="interest" placeholder="هر رشته یا حوزه‌ای که علاقه‌مندید را تایپ کنید">
+              <small class="err" data-err="interest"></small>
+            </label>
+
+            <label>رزومه علمی <span class="opt">(اختیاری)</span>
+              <input type="file" name="cv" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.zip">
+              <small class="hint-file">حداکثر ۵ مگابایت — فرمت‌های مجاز: PDF، Word، تصویر، ZIP</small>
+              <small class="err" data-err="cv"></small>
+            </label>
+
+            <button type="submit" class="btn btn-gold btn-full" id="submitBtn">ثبت‌نام</button>
+            <small class="err" data-err="general"></small>
+          </form>
+
+          <!-- پیام موفقیت -->
+          <div class="success-box" id="successBox" hidden>
+            <div class="success-icon">✓</div>
+            <h3>ثبت‌نام شما انجام شد!</h3>
+            <p id="successMsg"></p>
+            <a class="btn btn-purple btn-full" href="{{ url_for('index') }}">بازگشت به فهرست کارگاه‌ها</a>
+          </div>
+
+          {% else %}
+          <div class="closed-box">
+            <div class="closed-icon">⏳</div>
+            <h3>ثبت‌نام این کارگاه هنوز فعال نشده است</h3>
+            <p>به‌زودی از طریق همین صفحه قابل ثبت‌نام خواهد بود. برای اطلاع از زمان دقیق، به اعلان‌های مرکز توجه کنید.</p>
+            <a class="btn btn-purple btn-full" href="{{ url_for('index') }}">بازگشت به فهرست کارگاه‌ها</a>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p><strong>{{ w.subtitle }}</strong> — دانشگاه علوم پزشکی تهران</p>
+    <p>برای سوالات: {{ w.contact }}</p>
+  </footer>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="{{ url_for('static', filename='js/workshop.js') }}"></script>
+</body>
+</html>

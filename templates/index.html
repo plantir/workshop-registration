@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت‌نام کارگاه‌ها | مرکز تحقیقات پزشکی ورزشی</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- هدر -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="logo-badge">
+        <span class="logo-ring">🏃</span>
+        <span>مرکز تحقیقات پزشکی ورزشی</span>
+      </div>
+      <h1>ثبت‌نام کارگاه‌های آموزشی</h1>
+      <p>کارگاه‌های پژوهشی مرکز تحقیقات پزشکی ورزشی را انتخاب کنید و در چند ثانیه ثبت‌نام کنید.</p>
+    </div>
+    <svg class="wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,50 C240,95 480,0 720,35 C960,70 1200,20 1440,55 L1440,90 L0,90 Z" fill="#f4f5fb"/>
+    </svg>
+  </header>
+
+  <!-- کارت‌های کارگاه -->
+  <main class="container">
+    <h2 class="section-title">کارگاه‌های قابل ثبت‌نام</h2>
+
+    <p class="section-sub">روی هر کارگاه کلیک کنید و فرم ثبت‌نام را پر کنید — کمتر از یک دقیقه!</p>
+
+    <div class="grid" id="workshops">
+      {% for w in workshops %}
+      <article class="card {{ 'open' if w.open else 'closed' }}" data-id="{{ w.id }}">
+        {% if w.poster %}
+        <div class="poster">
+          <span class="status-pill {{ 'closed' if not w.open }}">{{ 'ثبت‌نام باز' if w.open else 'به‌زودی' }}</span>
+          <img src="{{ url_for('static', filename='posters/' ~ w.poster) }}"
+               alt="پوستر {{ w.title }}"
+               onerror="this.closest('.poster').classList.add('no-img')">
+          <div class="poster-fallback">
+            <div class="fb-icon">🔍📚</div>
+            <div class="fb-title">{{ w.title }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="poster">
+          <span class="status-pill {{ 'closed' if not w.open }}">{{ 'ثبت‌نام باز' if w.open else 'به‌زودی' }}</span>
+          <div class="poster-fallback">
+            <div class="fb-icon">🎓</div>
+            <div class="fb-title">{{ w.title }}</div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="card-body">
+          <span class="badge">{{ w.subtitle }}</span>
+          <h3>{{ w.title }}</h3>
+          <p class="level">{{ w.level }}</p>
+          <p class="desc">{{ w.description }}</p>
+
+          {% if w.topics %}
+          <details class="topics">
+            <summary>سرفصل‌های دوره</summary>
+            <ul>
+              {% for t in w.topics %}<li>{{ t }}</li>{% endfor %}
+            </ul>
+          </details>
+          {% endif %}
+
+          <div class="meta">
+            <span>⏳ مهلت ثبت‌نام: <b>{{ w.deadline }}</b></span>
+            <span>✉️ ایمیل: <b>{{ w.contact }}</b></span>
+          </div>
+
+          {% if w.open %}
+          <a class="btn btn-gold" href="{{ url_for('workshop_page', workshop_id=w.id) }}">
+            مشاهده جزئیات و ثبت‌نام
+          </a>
+          {% else %}
+          <a class="btn btn-outline" href="{{ url_for('workshop_page', workshop_id=w.id) }}">
+            مشاهده جزئیات
+          </a>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p><strong>مرکز تحقیقات پزشکی ورزشی</strong> — دانشگاه علوم پزشکی تهران</p>
+    <p>برای سوالات: sportmed@tums.ac.ir</p>
+  </footer>
+
+  <!-- پیام موفقیت -->
+  <div class="toast" id="toast" hidden></div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پنل مدیریت | ثبت‌نام کارگاه‌ها</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="admin-body">
+
+  {% if logged_in %}
+  <header class="admin-header">
+    <h2>پنل مدیریت ثبت‌نام‌ها</h2>
+    <div>
+      <a class="btn btn-gold" href="{{ url_for('export_all') }}">⬇ دانلود اکسل همه‌ی کارگاه‌ها</a>
+      <a class="btn btn-outline" href="{{ url_for('admin_logout') }}">خروج</a>
+    </div>
+  </header>
+
+  {% with msgs = get_flashed_messages() %}{% if msgs %}
+    <div class="flash">{{ msgs[0] }}</div>
+  {% endif %}{% endwith %}
+
+  <main class="container admin-main">
+    {% for w in workshops %}
+    <section class="admin-card" data-id="{{ w.id }}">
+      <div class="admin-card-head">
+        <div>
+          <h3>{{ w.title }}</h3>
+          <span class="badge">{{ w.deadline }}</span>
+        </div>
+        <div class="admin-card-actions">
+          <span class="count" data-count="{{ w.id }}">…</span>
+          <a class="btn btn-gold btn-sm" href="{{ url_for('export_one', workshop_id=w.id) }}">⬇ خروجی اکسل</a>
+          <button class="btn btn-outline btn-sm js-view" data-id="{{ w.id }}">👁 مشاهده لیست</button>
+        </div>
+      </div>
+
+      <div class="table-wrap" hidden>
+        <table>
+          <thead>
+            <tr>
+              <th>ردیف</th><th>نام و نام خانوادگی</th><th>شماره دانشجویی</th>
+              <th>موبایل</th><th>ایمیل</th><th>مقطع</th><th>رشته</th><th>ترم</th>
+              <th>حوزه علاقه‌مندی</th><th>رزومه</th><th>تاریخ ثبت‌نام</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="empty" hidden>هنوز ثبت‌نامی در این کارگاه انجام نشده است.</p>
+      </div>
+    </section>
+    {% endfor %}
+  </main>
+
+  {% else %}
+  <div class="login-box">
+    <h3>ورود مدیر</h3>
+    <form method="post" action="{{ url_for('admin_login') }}">
+      <label>رمز عبور
+        <input type="password" name="password" autofocus>
+      </label>
+      <button type="submit" class="btn btn-gold btn-full">ورود</button>
+    </form>
+    <a class="back" href="{{ url_for('index') }}">← بازگشت به صفحه اصلی</a>
+  </div>
+  {% endif %}
+
+  <script>
+    const IS_ADMIN = {{ 'true' if logged_in else 'false' }};
+    const WORKSHOP_IDS = {{ workshops | map(attribute='id') | list | tojson if logged_in else '[]' }};
+  </script>
+  <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
